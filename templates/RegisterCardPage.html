@@ -1,0 +1,412 @@
+{% extends "Layout/Base.html" %}
+{% load static %}
+
+{% block title %}爬蟲卡片查詢{% endblock %}
+
+{% block css %}
+<style>
+    
+</style>
+{% endblock %}
+
+{% block content %}
+
+<form id="queryForm">
+    {% csrf_token %}
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-5 row">
+                <label class="col-sm-2 col-form-label" for="CardNo">卡號:</label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" id="CardNo" name="CardNo">
+                </div>
+                <label class="col-sm-2 col-form-label" for="CardId">卡片ID:</label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" id="CardId" name="CardId">
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3">
+                    <button class="btn btn-info" id="query" type="button" data-action="query" value="查詢">查詢</button>
+                    <button class="btn btn-primary" id="add" type="button" data-action="add" data-toggle="modal" data-target="#AddModal" value="新增">新增</button>
+                    <button class="btn btn-primary" id="batchadd" type="button" data-action="batchadd"  data-toggle="modal" data-target="#BatchAddModal" value="批次新增">批次新增</button>
+                    <button class="btn btn-danger" id="delete" type="button" data-action="delete" value="刪除">刪除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr>
+<!-- 顯示查詢結果表格抬頭 -->
+<table id="registercardtable" class="cell-border hover stripe">
+    <thead>
+        <tr>
+            <th>卡號</th>
+            <th>卡片ID</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AddModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddModalLabel">輸入卡號</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 在这里放置表单内容 -->
+                <form id="Addform">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <div class="row m-3">
+                            <label class="col-sm-3 col-form-label" for="InputCardNo">卡號：</label>
+                            <div class="col-sm-5">
+                                <input class="form-control" autocomplete="off" type="text" id="InputCardNo" name="InputCardNo" oninput="convertToUppercase('InputCardNo')">
+                            </div>
+                        </div>
+                        <div class="row m-3">
+                            <label class="col-sm-3 col-form-label" for="InputCardId">卡片ID:</label>
+                            <div class="col-sm-5">
+                                <input class="form-control" autocomplete="off" type="text" id="InputCardId" name="InputCardId">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 可以添加更多的表单字段 -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary" id="SaveAdd">儲存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="BatchAddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AddModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddModalLabel">輸入卡號</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 在这里放置表单内容 -->
+                <form id="BatchAddform">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <div class="row m-3">
+                            <label class="col-sm-5 col-form-label" id="sample">XXXX-JP000</label>
+                        </div>
+                        <div class="row m-3">
+                            <label class="col-sm-3 col-form-label">版本：</label>
+                            <div class="col-sm-5">
+                                <input type="radio" id="JP" name="Version" value="JP" onchange="radioChange(this)" checked>
+                                <label for="JP">日文</label>
+                                <input type="radio" id="EN" name="Version" value="EN" onchange="radioChange(this)">
+                                <label for="EN">美英</label>
+                                <input type="radio" id="AE" name="Version" value="AE" onchange="radioChange(this)">
+                                <label for="AE">亞英</label>
+                            </div>
+                        </div>
+                        <div class="row m-3">
+                            <label class="col-sm-3 col-form-label" for="InputCardVersion">版號：</label>
+                            <div class="col-sm-5">
+                                <input class="form-control" autocomplete="off" type="text" id="InputCardVersion" name="InputCardVersion" oninput="convertToUppercase('InputCardVersion')" onchange="InputCardVersionchange()">
+                            </div>
+                        </div>
+                        <div class="row m-3">
+                            <label class="col-sm-3 col-form-label" for="InputCardSpecial">特殊欄位：</label>
+                            <div class="col-sm-5">
+                                <input class="form-control" autocomplete="off" type="text" id="InputCardSpecial" name="InputCardSpecial" maxlength="1" oninput="convertToUppercase('InputCardSpecial')" onchange="InputCardSpecialchange()">
+                            </div>
+                        </div>
+                        <div class="row m-3">
+                            <label class="col-sm-3 col-form-label" for="InputCardStart">編號:</label>
+                            <div class="col-sm-3">
+                                <input class="form-control" autocomplete="off" type="number" id="InputCardStart" name="InputCardStart" min="0">
+                            </div>
+                            <label class="col-sm-1 col-form-label" for="InputCardEnd">至</label>
+                            <div class="col-sm-3">
+                                <input class="form-control" autocomplete="off" type="number" id="InputCardEnd" name="InputCardEnd">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 可以添加更多的表单字段 -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary" id="BatchSaveAdd">儲存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var tmptable;
+    var historydata;
+
+    tmptable = $('#registercardtable').DataTable({
+        data: historydata,
+        columns:[
+            {data:'cardno'},
+            {data:'cardid'}
+        ]
+    })
+    const table = tmptable;
+
+    if(table != null){
+        table.on('click', 'tbody tr', function (e) {
+            e.currentTarget.classList.toggle('selected');
+        });
+    }
+
+    //畫面載入時自動查詢
+    window.onload = function(){
+        document.getElementById("query").click();
+    }
+
+    // 使用 AJAX 在不刷新整個頁面的情況下提交查詢
+    //query
+    document.getElementById("query").addEventListener("click", function (event) {
+        let cardno = document.getElementById("CardNo").value;
+        let cardid = document.getElementById("CardId").value;
+
+        let url = 'http://localhost:8000/api/RegisterCard' 
+
+        // 創建一個空的查詢參數對象
+        let queryParams = {};
+
+        // 如果 text1 有值，將它添加到查詢參數中
+        if (cardno != '') {
+            queryParams['cardno'] = cardno;
+        }
+
+        // 如果 text2 有值，將它添加到查詢參數中
+        if (cardid != '') {
+            queryParams['cardid'] = cardid;
+        }
+
+        // 將查詢參數轉換為查詢字符串
+        let queryString = Object.keys(queryParams).map(key => key + '=' + queryParams[key]).join('&');
+
+        // 組合完整的 API 網址
+        url = url + '?' + queryString;
+
+        $.ajax({
+            url: url,
+            method: "GET",
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                buildTable(data)
+            }
+        });
+    });
+
+    //SaveAdd
+    document.getElementById("SaveAdd").addEventListener("click", function (event) {
+        const data={
+            cardno:document.getElementById("InputCardNo").value,
+            cardid:document.getElementById("InputCardId").value
+        }
+        let InputCardNo = document.getElementById("InputCardNo").value;
+        let InputCardId = document.getElementById("InputCardId").value;
+
+        let url = 'http://localhost:8000/api/RegisterCard' 
+
+        $.ajax({
+            url: url,
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRFToken": '{{csrf_token}}'
+            },
+            data: JSON.stringify(data),
+            success: function(data){
+                $("#AddModal").modal('hide');
+                document.getElementById("query").click();
+            },
+            error: function(xhr, error){
+                showErrorMessage(xhr.responseJSON.error);
+           }
+        });
+    });
+
+    //BatchSaveAdd
+    document.getElementById("BatchSaveAdd").addEventListener("click", function (event) {
+        let InputCardVersion = document.getElementById("InputCardVersion").value;
+        let InputCardSpecial = document.getElementById("InputCardSpecial").value;
+        let InputCardStart = document.getElementById("InputCardStart").value;
+        let InputCardEnd = document.getElementById("InputCardEnd").value;
+
+        var versions = document.getElementsByName("Version");
+        var selectedValue = "";
+        for (var i = 0; i < versions.length; i++) {
+            if (versions[i].checked) {
+                selectedValue = versions[i].value;
+                break;
+            }
+        }
+        if (selectedValue === "") {
+            showErrorMessage("請選擇卡片版本");
+            return;
+        }
+        if (InputCardVersion === "") {
+            showErrorMessage("請輸入版號");
+            return;
+        }
+        if (InputCardStart === "" || InputCardEnd === "") {
+            showErrorMessage("請輸入編號");
+            return;
+        }
+        if(parseInt(InputCardStart) > parseInt(InputCardEnd)){
+            showErrorMessage("編號請由小到大");
+            return;
+        }
+        const data={
+            cardversion: InputCardVersion,
+            cardspecial: InputCardSpecial,
+            versions: selectedValue,
+            start: InputCardStart,
+            end: InputCardEnd
+        }
+
+        let url = 'http://localhost:8000/api/RegisterCard/batch' 
+
+        $.ajax({
+            url: url,
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRFToken": '{{csrf_token}}'
+            },
+            data: JSON.stringify(data),
+            success: function(data){
+                $("#BatchAddModal").modal('hide');
+                document.getElementById("query").click();
+            },
+            error: function(xhr, error){
+                showErrorMessage(xhr.responseJSON.error);
+           }
+        });
+    });
+
+    //delete
+    document.getElementById("delete").addEventListener("click", function (event) {
+        var row=table.rows( ".selected" ).data().toArray();
+        var deleteArray=[];
+        
+        if(row.length <= 0){
+            showErrorMessage("請選擇資料行");
+            return;
+        }
+        
+        row.forEach(function(e){
+            deleteArray.push(e['cardno']);
+        });
+
+        let url = 'http://localhost:8000/api/RegisterCard'
+
+        
+        $.ajax({
+            url: url,
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRFToken": '{{csrf_token}}'
+            },
+            data: JSON.stringify({data:deleteArray}),
+            success: function(data){
+                document.getElementById("query").click();
+            },
+            error: function(xhr, error){
+                showErrorMessage(xhr.responseJSON.error);
+           }
+        });
+    });
+
+    $(document).ready(function(){
+        $("#add").click(function(){
+            form = document.getElementById("Addform")
+            form.reset();
+            $("#AddModal").modal('show');
+        });
+    });
+
+    $(document).ready(function(){
+        $("#batchadd").click(function(){
+            form = document.getElementById("BatchAddform")
+            document.getElementById("sample").innerHTML = "XXXX-JP000";
+            form.reset();
+            $("#BatchAddModal").modal('show');
+        });
+    });
+
+    document.getElementById("InputCardEnd").addEventListener("keypress", function (event){
+        if(event.key == "Enter"){
+            document.getElementById("BatchSaveAdd").click();
+        }
+    });
+
+    function buildTable(data){
+        tmptable.clear().rows.add(data).draw();
+    }
+
+    function radioChange(radio) {
+        samplestr = document.getElementById("sample")
+        InputCardVersionstr = document.getElementById("InputCardVersion")
+        InputCardSpecialstr = document.getElementById("InputCardSpecial")
+
+        if(InputCardVersion.value == ""){
+            if(InputCardSpecialstr.value == "")
+                samplestr.innerHTML = 'XXXX' + '-' + radio.value + '000';
+            else
+                samplestr.innerHTML = 'XXXX' + '-' + radio.value + InputCardSpecialstr.value + '00';
+        }
+        else{
+            if(InputCardSpecialstr.value == "")
+                samplestr.innerHTML = 'XXXX' + '-' + radio.value + '000';
+            else
+                samplestr.innerHTML = InputCardVersionstr.value + '-' + radio.value + InputCardSpecialstr.value + '00'
+        }
+    }
+
+    function InputCardVersionchange(){
+        samplestr = document.getElementById("sample");
+        InputCardVersion = document.getElementById("InputCardVersion");
+        
+        if(InputCardVersion.value == "")
+            samplestr.innerHTML = "XXXX" + samplestr.innerHTML.substring(samplestr.innerHTML.search("-"));
+        else
+            samplestr.innerHTML = InputCardVersion.value + samplestr.innerHTML.substring(samplestr.innerHTML.search("-"));
+
+    }
+
+    function InputCardSpecialchange(){
+        samplestr = document.getElementById("sample")
+        InputCardVersionstr = document.getElementById("InputCardVersion")
+        InputCardSpecialstr = document.getElementById("InputCardSpecial")
+        
+        var indexOfDash = samplestr.innerHTML.indexOf('-');
+        var thirdIndex = indexOfDash + 3;
+
+        if(InputCardSpecialstr.value == ""){
+            samplestr.innerHTML = samplestr.innerHTML.substring(0, thirdIndex) + "000";
+        }
+        else{
+            samplestr.innerHTML = samplestr.innerHTML.substring(0, thirdIndex) + InputCardSpecialstr.value + "00";
+        }
+    }
+</script>
+
+{% endblock %}

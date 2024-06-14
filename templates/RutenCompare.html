@@ -1,0 +1,171 @@
+{% extends "Layout/Base.html" %}
+{% load static %}
+
+{% block title %}露天比價{% endblock %}
+
+{% block css %}
+<style>
+    
+</style>
+{% endblock %}
+
+{% block content %}
+
+<form id="InputForm">
+    {% csrf_token %}
+    <div class="card">
+        <div class="card-body" id="body">
+            <div class="mb-1 row" id="struct1">
+                <label class="col-sm-1 col-form-label" for="CardNo1">卡號:</label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="text" id="CardNo1" name="CardNo1">
+                </div>
+                <label class="col-sm-1 col-form-label" for="CardNumber1">張數:</label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="number" id="CardNumber1" name="CardNumber1">
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-primary fa-solid fa-plus" id="add" type="button" data-action="add" value="新增" onclick="addStruct()"></button>
+                    <button class="btn btn-danger fa-solid fa-minus" id="delete" type="button" data-action="delete" value="刪除" onclick="removeStruct('struct1')"></button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="mb-3">
+                <button class="btn btn-primary" id="query" type="button" data-action="query" value="查詢" onclick="queryResult()">查詢</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr>
+<!-- 顯示查詢結果表格抬頭 -->
+<table id="registercardtable" class="cell-border hover stripe">
+    <thead>
+        <tr>
+            <th>商家</th>
+            <th>卡號</th>
+            <th>版本</th>
+            <th>價格</th>
+            <th>商品ID</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var structCount = 1;//struct計數
+    var tmptable;
+    var historydata;
+
+    tmptable = $('#registercardtable').DataTable({
+        data: historydata,
+        columns:[
+            {data:'cardno'},
+            {data:'cardid'}
+        ]
+    })
+    const table = tmptable;
+
+    if(table != null){
+        table.on('click', 'tbody tr', function (e) {
+            e.currentTarget.classList.toggle('selected');
+        });
+    }
+
+    // 使用 AJAX 在不刷新整個頁面的情況下提交查詢
+    //query
+
+    function buildTable(data){
+        tmptable.clear().rows.add(data).draw();
+    }
+
+    function queryResult(){
+        var data = [];
+        var body = document.getElementById('body');
+        var structs = body.querySelectorAll('[id^="struct"]'); // 選擇所有id以struct開頭的元素
+        
+        structs.forEach(function(struct) {
+            //var textValue = struct.querySelector('[id^="CardNo"]').value;
+            var cardno = struct.querySelector('[id^="CardNo"]').value;
+            var cardnumber = Number(struct.querySelector('[id^="CardNumber"]').value);
+
+            if(cardno == ''){
+                return;
+            }
+
+            if(!Number.isInteger(cardnumber) || cardnumber <= 0){
+                showErrorMessage('數量須輸入正整數');
+                return;
+            }
+        
+            var item = {
+                cardno: cardno,
+                cardnumber: cardnumber
+            };
+        
+            data.push(item);
+          });
+        
+        let url = 'http://localhost:8000/api/RutenCompare' 
+        console.log(data);
+
+        if(data.length <= 0){
+            showErrorMessage('至少需輸入一組卡號及數量');
+            return;
+        }
+        
+        $.ajax({
+            url: url,
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRFToken": '{{csrf_token}}'
+            },
+            data: JSON.stringify(data),
+            success: function(data){
+                
+            },
+            error: function(xhr, error){
+                showErrorMessage(xhr.responseJSON.error);
+           }
+        });
+    }
+
+    function addStruct(){
+        structCount++;
+        var body = document.getElementById('body');
+        var newDiv = document.createElement('div');
+        var divId = 'struct' + structCount;
+
+        newDiv.id = divId;
+        newDiv.className = "mb-1 row";
+        newDiv.innerHTML = `
+            <label class="col-sm-1 col-form-label" for="CardNo${structCount}">卡號:</label>
+            <div class="col-sm-3">
+                <input class="form-control" type="text" id="CardNo${structCount}" name="CardNo${structCount}">
+            </div>
+            <label class="col-sm-1 col-form-label" for="CardNumber${structCount}">張數:</label>
+            <div class="col-sm-3">
+                <input class="form-control" type="number" id="CardNumber${structCount}" name="CardNumber${structCount}">
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-primary fa-solid fa-plus" id="add" type="button" data-action="add" value="新增" onclick="addStruct()"></button>
+                <button class="btn btn-danger fa-solid fa-minus" id="delete" type="button" data-action="delete" value="刪除" onclick="removeStruct('${divId}')"></button>
+            </div>
+        `;
+
+        body.appendChild(newDiv);
+    }
+
+    function removeStruct(id) {
+        var elementToRemove = document.getElementById(id);
+        elementToRemove.parentNode.removeChild(elementToRemove);
+      }
+</script>
+
+{% endblock %}

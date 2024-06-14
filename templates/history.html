@@ -1,0 +1,137 @@
+{% extends "Layout/Base.html" %}
+{% load static %}
+
+{% block title %}歷史價格查詢{% endblock %}
+
+{% block css %}
+<style>
+    
+</style>
+{% endblock %}
+
+{% block content %}
+
+<form id="queryForm">
+    {% csrf_token %}
+    <!--<card>
+        <label for="start_date">起始日期：</label>
+        <input type="date" id="start_date" name="start_date">
+        <label for="end_date">結束日期：</label>
+        <input type="date" id="end_date" name="end_date">
+    </card>
+    <card>
+        <input id="" type="submit" value="查詢">
+    </card>-->
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-2 row">
+                <label class="col-sm-2 col-form-label" for="start_date">起始日期：</label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="date" id="start_date" name="start_date">
+                </div>
+                <label class="col-sm-2 col-form-label" for="end_date">結束日期：</label>
+                <div class="col-sm-3">
+                    <input class="form-control" type="date" id="end_date" name="end_date">
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-1">
+                    <button class="btn btn-info" id="query" type="button" data-action="query" value="查詢">查詢</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr>
+<!-- 顯示查詢結果表格抬頭 -->
+<table id="historytable" class="cell-border hover stripe">
+    <thead>
+        <tr>
+            <th>日期</th>
+            <th>商品ID</th>
+            <th>卡號</th>
+            <th>商品名稱</th>
+            <th>稀有度</th>
+            <th>規格</th>
+            <th>項目</th>
+            <th>價格</th>
+            <th>數量</th>
+            <!-- 添加其他列名 -->
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var tmptable;
+    var historydata;
+
+    tmptable = $('#historytable').DataTable({
+        data: historydata,
+        columns:[
+            {data:'LogDate'},
+            {data:'ProdId'},
+            {data:'CardNo'},
+            {data:'ProdName'},
+            {data:'CardType'},
+            {data:'Spec'},
+            {data:'SpecSub'},
+            {data:'Price'},
+            {data:'Qty'}
+        ]
+    })
+    const table = tmptable;
+
+    if(table != null){
+        table.on('click', 'tbody tr', function (e) {
+            e.currentTarget.classList.toggle('selected');
+        });
+    }
+
+    // 使用 AJAX 在不刷新整個頁面的情況下提交查詢
+    document.getElementById("query").addEventListener("click", function (event) {
+        let start_date = document.getElementById("start_date").value;
+        let end_date = document.getElementById("end_date").value;
+        let url = 'http://localhost:8000/api/Dailybind' 
+
+        // 創建一個空的查詢參數對象
+        let queryParams = {};
+
+        // 如果 text1 有值，將它添加到查詢參數中
+        if (start_date != '') {
+            queryParams['start_date'] = start_date;
+        }
+
+        // 如果 text2 有值，將它添加到查詢參數中
+        if (end_date != '') {
+            queryParams['end_date'] = end_date;
+        }
+
+        // 將查詢參數轉換為查詢字符串
+        let queryString = Object.keys(queryParams).map(key => key + '=' + queryParams[key]).join('&');
+
+        // 組合完整的 API 網址
+        url = url + '?' + queryString;
+
+        $.ajax({
+            url: url,
+            method: "GET",
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                buildTable(data)
+            }
+        });
+    });
+
+    function buildTable(data){
+        tmptable.clear().rows.add(data).draw();
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+#從DB同步至model.py
+pipenv run python manage.py inspectdb > models.py
+
+#同步資料表
+pipenv run python manage.py makemigrations
+pipenv run python manage.py migrate (--fake-initial)
+
+#建立資料表(auth_user)中superuser
+pipenv run python manage.py createsuperuser
+
+
+#package
+pipenv install Django
+pipenv install drf-yasg
+pipenv install django-filter
+
+#mysqlclient
+#if install fail 
+    sudo apt install pkg-config
+    export MYSQLCLIENT_LDFLAGS=$(pkg-config --libs mysqlclient)
+    export MYSQLCLIENT_CFLAGS=$(pkg-config --cflags mysqlclient)
+pipenv install mysqlclient==2.0

@@ -1,0 +1,129 @@
+
+    <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+            <div class="sb-sidenav-menu">
+                <div class="nav">
+                    <div class="sb-sidenav-menu-heading">功能畫面</div>
+                    <a class="nav-link" href="index.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        Dashboard
+                    </a>
+                    <a class="nav-link" href="history.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        露天歷史價格
+                    </a>
+                    <a class="nav-link" href="RutenCompare.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        露天比價
+                    </a>
+                    <a class="nav-link" href="#">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        單卡情報
+                    </a>
+                    <div class="sb-sidenav-menu-heading">資料設定</div>
+                    <a class="nav-link" href="RegisterCardPage.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        定期爬蟲卡片設定
+                    </a>
+                    <a class="nav-link" href="#">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        即時爬蟲卡片設定
+                    </a>
+                    <div class="sb-sidenav-menu-heading">Interface</div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Layouts
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="layout-static.html">Static Navigation</a>
+                            <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
+                        </nav>
+                    </div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                        <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                        Pages
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                                Error
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="404.html">404 Page</a>
+                                    <a class="nav-link" href="500.html">500 Page</a>
+                                </nav>
+                            </div>
+                        </nav>
+                    </div>
+                    <div class="sb-sidenav-menu-heading">自用</div>
+                    <a class="nav-link" href="/swagger/" target="_blank" rel="noreferrer noopenner">
+                        <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                        swagger
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+<!--
+<nav id="sidebar" class="sidebar js-sidebar">
+    <div class="sidebar-content js-simplebar">
+        <a class="sidebar-brand" href="index.html">
+            <span class="align-middle">Yu-gi-oh</span>
+        </a>
+
+        <ul class="sidebar-nav">
+            <li class="sidebar-header">
+                功能畫面
+            </li>
+
+            <li class="sidebar-item active">
+                <a class="sidebar-link" href="index.html">
+                    <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="history.html">
+                    <i class="align-middle" data-feather="user"></i> <span class="align-middle">歷史價格</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="pages-sign-in.html">
+                    <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">單卡情報</span>
+                </a>
+            </li>
+
+            <li class="sidebar-header">
+                資料設定
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="RegisterCardPage.html">
+                    <i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">定期爬蟲卡片設定</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="maps-google.html">
+                    <i class="align-middle" data-feather="map"></i> <span class="align-middle">即時爬蟲卡片設定</span>
+                </a>
+            </li>
+
+            <li class="sidebar-header">
+                自用
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/swagger/" target="_blank" rel="noreferrer noopenner">
+                    <i class="align-middle" data-feather="square"></i> <span class="align-middle">swagger</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>-->
